@@ -44,10 +44,28 @@ class SeekScraper(BaseScraper):
                 user_data_dir=str(self.profile_dir),
                 headless=self.headless,
                 viewport={"width": 1280, "height": 900},
-                args=["--disable-blink-features=AutomationControlled"],
+                args=[
+                    "--disable-blink-features=AutomationControlled",
+                    "--no-sandbox",
+                    "--disable-dev-shm-usage",
+                ],
                 ignore_default_args=["--enable-automation"],
             )
             page = context.pages[0] if context.pages else await context.new_page()
+
+            # Attempt optional stealth application if library is present
+            try:
+                from playwright_stealth import stealth_async
+                await stealth_async(page)
+            except ImportError:
+                pass
+
+            # Mask navigator.webdriver in page context
+            await page.add_init_script("""
+                Object.defineProperty(navigator, 'webdriver', {
+                    get: () => undefined
+                });
+            """)
 
             for page_num in range(1, max_pages + 1):
                 url = f"{base}{params}&page={page_num}"
@@ -144,8 +162,29 @@ class SeekScraper(BaseScraper):
                 user_data_dir=str(self.profile_dir),
                 headless=False,
                 viewport={"width": 1280, "height": 900},
+                args=[
+                    "--disable-blink-features=AutomationControlled",
+                    "--no-sandbox",
+                    "--disable-dev-shm-usage",
+                ],
+                ignore_default_args=["--enable-automation"],
             )
             page = context.pages[0] if context.pages else await context.new_page()
+
+            # Attempt stealth application if available
+            try:
+                from playwright_stealth import stealth_async
+                await stealth_async(page)
+            except ImportError:
+                pass
+
+            # Mask navigator.webdriver
+            await page.add_init_script("""
+                Object.defineProperty(navigator, 'webdriver', {
+                    get: () => undefined
+                });
+            """)
+
             await page.goto("https://www.seek.com.au/sign-in", wait_until="domcontentloaded")
             print("[Seek] Browser opened. Please log in, then close the window when finished.")
             try:
