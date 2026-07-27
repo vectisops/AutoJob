@@ -29,8 +29,15 @@ def export_to_excel(jobs: List[Job], filename: str | None = None) -> Path:
             "Match Reasons": "; ".join(j.match_reasons),
             "Description (excerpt)": (j.description or "")[:500],
         })
-    pd.DataFrame(rows).to_excel(path, index=False, engine="openpyxl")
-    return path
+    df = pd.DataFrame(rows)
+    try:
+        df.to_excel(path, index=False, engine="openpyxl")
+        return path
+    except ModuleNotFoundError:
+        # Fallback if openpyxl is not installed
+        csv_path = path.with_suffix(".csv")
+        df.to_csv(csv_path, index=False)
+        return csv_path
 
 
 def export_to_csv(jobs: List[Job], filename: str | None = None) -> Path:

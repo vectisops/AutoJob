@@ -1,6 +1,5 @@
 from dataclasses import dataclass, field, asdict
 from typing import Optional, List, Dict, Any
-from datetime import datetime
 
 
 @dataclass
@@ -32,12 +31,18 @@ class Job:
 
     @property
     def salary_display(self) -> str:
+        # Prefer numeric range; annotate predicted salaries instead of hiding the numbers
+        predicted = (self.salary_raw or "").strip().lower() == "predicted"
+
+        if self.salary_min is not None and self.salary_max is not None:
+            s = f"${self.salary_min:,.0f} – ${self.salary_max:,.0f}"
+            return f"{s} (Predicted)" if predicted else s
+        if self.salary_min is not None:
+            s = f"From ${self.salary_min:,.0f}"
+            return f"{s} (Predicted)" if predicted else s
+        if self.salary_max is not None:
+            s = f"Up to ${self.salary_max:,.0f}"
+            return f"{s} (Predicted)" if predicted else s
         if self.salary_raw:
             return self.salary_raw
-        if self.salary_min and self.salary_max:
-            return f"${self.salary_min:,.0f} – ${self.salary_max:,.0f}"
-        if self.salary_min:
-            return f"From ${self.salary_min:,.0f}"
-        if self.salary_max:
-            return f"Up to ${self.salary_max:,.0f}"
         return "Not specified"
