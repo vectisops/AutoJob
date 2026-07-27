@@ -1,56 +1,57 @@
 # AutoJob
 
-### Your personal job-hunting helper for Australia
+**A personal job-search assistant for Australia — especially Brisbane and South East Queensland.**
+
+AutoJob searches more widely than a normal job-board session, ranks what it finds against *your* preferences and résumé, then shows you only the strongest matches.  
+You get better coverage of niche and less-obvious roles, without drowning in noise.
 
 ---
 
-Finding the right job can feel like searching for a needle in a haystack.  
-AutoJob makes it simpler.
+## The idea in one sentence
 
-It looks across the main Australian job sites, remembers what matters to you, and shows you the roles that actually fit — especially if you’re based around Brisbane and the South East Queensland area.
-
-No more endless scrolling. Just clearer choices and a faster path to applying.
+Collect a few hundred relevant listings → score them for you → return the best **30** → remember what you’ve already seen so the next search stays fresh.
 
 ---
 
-## This is a personal tool
+## Who it’s for
 
-AutoJob is made for **one person looking for their next role**.
+AutoJob is built for **one person** hunting for their next role.
 
-It is not a bulk scraping system, not a data-harvesting service, and not designed for recruiters, agencies, or large-scale collection of job listings.
-
-Everything is kept deliberately modest:
-- A small number of results per search
-- Ranking focused on *your* résumé and preferences
-- One-click apply that simply opens the real job page for you
-- Logins and data that stay only on your own computer
-
-You stay in full control of every application.
+It is not a recruitment platform, not an agency tool, and not a bulk data harvester.  
+Everything is sized for a single user: private, local, and under your control.
 
 ---
 
-## What AutoJob does for you
+## What it does
 
-**Finds jobs that match you**  
-Tell it the kind of roles you’re interested in, where you’re happy to work, and the salary range that makes sense. You can also upload your résumé so it can look for jobs that better line up with your experience.
+### Broader search, tighter results
+Ordinary job sites show you a narrow first page. AutoJob pulls a larger but still manageable set of listings (typically a few hundred across sources) so niche or poorly titled roles are less likely to be missed.  
+It then ranks those results and returns a **maximum of 30** of the best matches.
 
-**Shows you the best matches first**  
-After it searches, AutoJob ranks the results and puts the top 20 most suitable jobs right at the top — with a simple “Apply Now” button next to each one.
+### Ranked for *you*
+You set locations, role types, keywords to include or exclude, and salary range.  
+You can also upload your résumé (PDF or Word). AutoJob uses that information to score each job so the list reflects your background, not just generic keyword matches.
 
-**Keeps everything organised**  
-You can export the full list into a spreadsheet so you can keep track of what you’ve seen and applied for.
+### Fresh results over time
+Each search is compared against a private history kept only on your computer.  
+Jobs you’ve already seen are filtered out, so later runs surface new opportunities instead of the same listings again.
 
-**Gives you a bit of background on the company**  
-For each role you can look up simple information about the organisation and get a feel for what working there might be like, including notes relevant to life in South East Queensland.
+### One-click apply
+The top matches appear as clear cards with an **Apply Now** button.  
+That button simply opens the official job page. AutoJob never submits applications for you — you stay in control.
 
-**Remembers your login (safely)**  
-For sites that need you to be signed in, you only need to log in once. AutoJob keeps that login on *your* computer only — nothing is sent anywhere else.
+### Light company context
+You can look up basic information about an employer, including notes that are useful if you’re considering roles in South East Queensland.
+
+### Private by design
+Résumés, login sessions, search preferences, and job history stay on your machine.  
+Nothing is uploaded to a central service for ranking or advertising.
 
 ---
 
-## Made with South East Queensland in mind
+## Built with SEQ in mind
 
-AutoJob is especially handy if you’re looking in:
+Locations you can focus on include:
 
 - Brisbane  
 - Gold Coast  
@@ -58,57 +59,58 @@ AutoJob is especially handy if you’re looking in:
 - Ipswich  
 - Logan  
 - Toowoomba  
-- Anywhere across SEQ or wider Queensland  
+- SEQ / Queensland more broadly  
 
-You can also search other major cities or choose remote roles across Australia or worldwide. Everything is selectable with simple checkboxes — no complicated settings.
+You can also include other Australian cities or remote roles (Australia-wide or worldwide).  
+Everything is chosen with simple checkboxes — no complicated configuration.
 
 ---
 
-## How it feels to use
-
-The app opens with clear tabs at the top:
+## How the app is organised
 
 **Filters**  
-This is where you set your preferences — locations, job titles, keywords you want to see (or avoid), salary range, and more. Tick the boxes that matter to you and hit search.
+Set locations, job titles, include/exclude keywords, salary range, and related preferences. Start a search from here.
 
 **Results**  
-Your top 20 matches appear as easy-to-read cards. Each one has an “Apply Now” button that takes you straight to the official application page. Below that you’ll see the full list of everything it found, sorted by how well they match.
+See your top matches (up to 30) as cards with Apply Now. Export to a spreadsheet if you want to keep a longer record.
 
 **Resume**  
-Upload your CV or résumé (PDF or Word document). AutoJob reads it and uses that information to rank jobs more intelligently for you.
+Upload a CV or résumé so ranking can take your experience into account.
 
 **Company Intel**  
-Curious about an employer? Type the company name (or pick one from your results) and get a quick overview plus lifestyle notes that are useful if you’re considering a move within SEQ.
+Quick background on an employer, with SEQ-relevant lifestyle notes where useful.
 
 **Settings**  
-This is where you connect any free job-search accounts you already have and set up the one-time login for sites that need it. Everything stays private on your own computer.
+Connect free job-search API credentials if you have them, and complete a one-time login for sites that need a signed-in session. All of this stays local.
 
 ---
 
-## A few friendly tips
+## A few practical tips
 
-- Start with the locations and job titles that matter most to you.  
-- Use the exclude list to filter out things you definitely don’t want (for example “unpaid” or “volunteer”).  
-- Uploading a résumé almost always improves the ranking.  
-- The “Apply Now” button opens the real job page — AutoJob never applies for you.  
-- You stay in control of every application.
-
----
-
-## Privacy & peace of mind
-
-Your résumé, login sessions, and search preferences never leave your computer.  
-AutoJob is designed for personal use — helping *you* find the next role, not collecting data for anyone else.
+- Be specific with locations and role titles that matter most to you.  
+- Use the exclude list for things you never want to see (e.g. unpaid, pure volunteer).  
+- Uploading a résumé usually improves ranking quality.  
+- Apply Now only opens the real listing — you decide whether to apply.  
+- Run searches over time; de-duplication means later runs emphasise what’s new.
 
 ---
 
-## Ready when you are
+## Privacy
 
-AutoJob is built to feel calm and useful rather than overwhelming.  
-Open it, set a few preferences, and let it bring the better-matching jobs to you.
-
-Whether you’re actively looking or just keeping an eye on the market in Brisbane and SEQ, it’s a quiet helper that works on your side.
+- Your résumé stays on your computer.  
+- Login sessions for job sites are stored in a local browser profile only.  
+- Job history used for de-duplication is a local file.  
+- AutoJob is designed to help *you* find roles, not to collect data for anyone else.
 
 ---
 
-*Made for people who want clearer job options without the usual noise.*
+## Philosophy
+
+Job boards optimise for advertisers and volume.  
+AutoJob optimises for one person who wants clearer options and less noise — especially if that person is looking in Brisbane and South East Queensland.
+
+Search more widely. Rank for yourself. Keep only what matters. Stay in control.
+
+---
+
+*Personal job search for Australia. Quiet, local, and focused on the roles that actually fit.*
