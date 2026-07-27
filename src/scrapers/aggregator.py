@@ -1,8 +1,9 @@
-"""Lightweight job aggregator for a single user.
+"""Job aggregator for a single personal user.
 
-Runs a small number of sources in parallel (max a few workers) and
-returns a modest set of results. Built for personal job hunting,
-not large-scale scraping.
+Pulls from a few sources (typically a few hundred results total) so
+niche roles are less likely to be missed, then the rest of the app
+ranks and returns only the best matches (default max 30).
+Built for individual job hunting, not continuous bulk harvesting.
 """
 from typing import List, Dict, Any
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -43,14 +44,14 @@ class JobAggregator:
                 print(f"[{s.name}] failed: {e}")
                 return []
 
-        # Small worker pool – this is personal use, not high-volume crawling
+        # Small worker pool – personal use, not high-volume crawling
         with ThreadPoolExecutor(max_workers=4) as ex:
             futures = {ex.submit(run, s): s for s in scrapers}
             for fut in as_completed(futures):
                 jobs = fut.result()
                 all_jobs.extend(jobs)
 
-        # Simple de-duplication by title + company
+        # Simple de-duplication by title + company within this run
         seen = set()
         unique = []
         for j in all_jobs:

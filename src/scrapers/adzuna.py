@@ -1,7 +1,8 @@
 """Adzuna API client for personal job searching in Australia.
 
-Designed for individual use only. Keeps result pages low by default
-and is not intended for bulk or continuous harvesting of listings.
+Collects a few hundred results when needed so niche roles can surface,
+then the app ranks and returns only the best matches (max 30) to the user.
+Still intended for personal use only — not continuous bulk harvesting.
 """
 from typing import List, Dict, Any, Optional
 import requests
@@ -54,8 +55,8 @@ class AdzunaScraper(BaseScraper):
         if not self.app_id or not self.app_key:
             return []
         jobs: List[Job] = []
-        # Deliberately modest page limit for personal use
-        max_pages = min(query.get("max_pages", 3), 5)
+        # Personal broader search, still bounded
+        max_pages = min(int(query.get("max_pages", 8)), 12)
         for page in range(1, max_pages + 1):
             try:
                 data = self._fetch_page(page, query)
