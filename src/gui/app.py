@@ -318,13 +318,22 @@ class AutoJobApp(ctk.CTk):
     def _auth_seek(self):
         self.status.configure(text="Opening Seek login browser… log in then close the window.")
         def run():
-            scraper = SeekScraper(self.config.get("seek_profile_dir"), headless=False)
+            import asyncio
+            loop = None
             try:
-                import asyncio
-                asyncio.run(scraper.authenticate_interactive())
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+                scraper = SeekScraper(self.config.get("seek_profile_dir"), headless=False)
+                loop.run_until_complete(scraper.authenticate_interactive())
                 self.after(0, lambda: self.status.configure(text="Seek session saved locally."))
             except Exception as e:
                 self.after(0, lambda: self.status.configure(text=f"Auth error: {e}"))
+            finally:
+                if loop is not None:
+                    try:
+                        loop.close()
+                    except Exception:
+                        pass
         threading.Thread(target=run, daemon=True).start()
 
     def _on_search(self):
@@ -337,10 +346,12 @@ class AutoJobApp(ctk.CTk):
                 locs = self.loc_checks.get_selected()
                 titles = self.title_checks.get_selected()
                 keywords = self.keywords_entry.get().strip()
+                title_bits = [f'"{t}"' for t in titles[:6]]
                 if titles and not keywords:
-                    keywords = " OR ".join(f'"{t}"' for t in titles[:6])
-                elif titles:
-                    keywords = f"({keywords}) OR " + " OR ".join(f'"{t}"' for t in titles[:4])
+                    keywords = " OR ".join(title_bits)
+                elif titles and keywords:
+                    # Append title terms without nested parens that confuse APIs
+                    keywords = keywords + " OR " + " OR ".join(title_bits[:4])
 
                 primary_loc = locs[0] if locs else "Brisbane QLD"
                 if "SEQ" in locs or "Queensland" in locs:
@@ -367,19 +378,23 @@ class AutoJobApp(ctk.CTk):
 
                 new_only = filter_new_jobs(ranked)
                 top_n = int(self.config.get("top_results", 30))
-                self.jobs = new_only[:top_n]
+                result_jobs = new_only[:top_n]
 
+                # Remember these so the next run can skip duplicates
                 save_history(ranked)
                 self.config.set("last_locations", locs)
                 self.config.set("exclude_keywords", self.exclude_box.get_keywords())
 
-                self.after(0, self._search_done)
+                # Hand results to main thread only — never mutate self.jobs from worker
+                self.after(0, lambda jobs=result_jobs: self._search_done(jobs))
             except Exception as e:
-                self.after(0, lambda: self._search_error(str(e)))
+                err = str(e)
+                self.after(0, lambda: self._search_error(err))
 
         threading.Thread(target=worker, daemon=True).start()
 
-    def _search_done(self):
+    def _search_done(self, jobs: List[Job]):
+        self.jobs = jobs
         self._render_results()
         self.search_btn.configure(state="normal", text="Search Jobs")
         self.status.configure(text=f"Done – {len(self.jobs)} unique jobs ranked. Top 30 ready.")
@@ -387,7 +402,8 @@ class AutoJobApp(ctk.CTk):
     def _search_error(self, msg: str):
         self.search_btn.configure(state="normal", text="Search Jobs")
         self.status.configure(text=f"Error: {msg}")
-        messagebox.showerror("Search failed", msg)
+        # Delay modal so it runs cleanly on the main UI loop
+        self.after(50, lambda: messagebox.showerror("Search failed", msg))
 
     def _export(self):
         if not self.jobs:
