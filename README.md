@@ -72,4 +72,44 @@ Everything is chosen with simple checkboxes — no complicated configuration.
 Set locations, job titles, include/exclude keywords, salary range, and related preferences. Start a search from here.
 
 **Results**  
-See your top matches (up to 30) as cards with Apply Now. Export to a spreadsheet if
+See your top matches (up to 30) as cards with Apply Now. Export to a spreadsheet if you want to keep a longer record.
+
+**Resume**  
+Upload a CV or résumé so ranking can take your experience into account.
+
+**Company Intel**  
+Quick background on an employer, with SEQ-relevant lifestyle notes where useful.
+
+**Settings**  
+Connect free job-search API credentials if you have them, and complete a one-time login for sites that need a signed-in session. All of this stays local.
+
+---
+
+## Quick start (for testing)
+
+```bash
+git clone https://github.com/vectisops/AutoJob.git
+cd AutoJob
+pip install -r requirements.txt
+playwright install chromium
+python -m src.main
+```
+
+1. Settings → add free Adzuna API keys (https://developer.adzuna.com)  
+2. Optional: Authenticate Seek (opens browser once)  
+3. Filters → set locations / titles / keywords  
+4. Optional: upload résumé  
+5. Search → review Top 30 → Apply Now or Export Excel  
+
+---
+
+## Privacy
+
+- Your résumé stays on your computer.  
+- Login sessions for job sites are stored in a local browser profile only.  
+- Job history used for de-duplication is a local file.  
+- AutoJob is designed to help *you* find roles, not to collect data for anyone else.
+
+---
+
+*Personal job search for Australia. Quiet, local, and focused on the roles that actually fit.*
