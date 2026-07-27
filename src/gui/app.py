@@ -29,17 +29,69 @@ LOCATIONS = [
     "Canberra", "Adelaide", "Perth", "Remote Australia", "Remote Worldwide",
 ]
 
-# Common job titles seen on Seek / Adzuna AU
+# Broad role titles across industries (Seek / Adzuna AU style)
 JOB_TITLES = [
-    "Software Engineer", "Software Developer", "Python Developer", "Full Stack Developer",
-    "Backend Developer", "Frontend Developer", "DevOps Engineer", "SRE",
-    "AI Engineer", "Machine Learning Engineer", "Data Engineer", "Data Scientist",
-    "Data Analyst", "Cyber Security Analyst", "Security Engineer", "Cloud Engineer",
-    "Solutions Architect", "Systems Engineer", "Network Engineer", "IT Support",
-    "Project Manager", "Product Manager", "Business Analyst", "Scrum Master",
-    "QA Engineer", "Test Analyst", "Embedded Engineer", "Firmware Engineer",
-    "Electrical Engineer", "Mechanical Engineer", "Civil Engineer",
-    "Defence", "Intelligence Analyst", "Systems Administrator", "Platform Engineer",
+    # Administration & Office
+    "Administration Officer", "Office Administrator", "Receptionist", "Executive Assistant",
+    "Personal Assistant", "Office Manager", "Data Entry", "Records Officer",
+    # Customer service & retail
+    "Customer Service Officer", "Customer Service Representative", "Call Centre Operator",
+    "Retail Assistant", "Retail Manager", "Store Manager", "Sales Assistant",
+    # Sales & marketing
+    "Sales Representative", "Account Manager", "Business Development Manager",
+    "Sales Manager", "Marketing Coordinator", "Marketing Manager", "Digital Marketing",
+    "Content Writer", "Communications Officer",
+    # Finance & accounting
+    "Accountant", "Bookkeeper", "Accounts Payable", "Accounts Receivable",
+    "Financial Analyst", "Finance Officer", "Payroll Officer", "Auditor",
+    "Credit Controller", "Tax Accountant",
+    # HR & recruitment
+    "HR Advisor", "HR Manager", "Recruitment Consultant", "Talent Acquisition",
+    "People and Culture", "Learning and Development",
+    # Healthcare & aged care
+    "Registered Nurse", "Enrolled Nurse", "Nurse", "Personal Care Worker",
+    "Aged Care Worker", "Disability Support Worker", "Allied Health",
+    "Physiotherapist", "Occupational Therapist", "Medical Receptionist",
+    "Practice Manager", "Healthcare Assistant",
+    # Education & childcare
+    "Teacher", "Teacher Aide", "Early Childhood Educator", "Childcare Educator",
+    "Tutor", "Trainer", "Instructional Designer",
+    # Trades & construction
+    "Electrician", "Plumber", "Carpenter", "Builder", "Boilermaker",
+    "Welder", "Fitter and Turner", "Mechanic", "Diesel Mechanic",
+    "Labourer", "Construction Worker", "Site Supervisor", "Project Supervisor",
+    "Painter", "Landscaper", "Horticulturist",
+    # Engineering (all disciplines)
+    "Civil Engineer", "Structural Engineer", "Mechanical Engineer", "Electrical Engineer",
+    "Mining Engineer", "Environmental Engineer", "Project Engineer", "Site Engineer",
+    "Quantity Surveyor", "Draftsperson", "CAD Designer",
+    # IT & technology
+    "Software Engineer", "Software Developer", "Full Stack Developer", "Backend Developer",
+    "Frontend Developer", "Python Developer", "Java Developer", "DevOps Engineer",
+    "Cloud Engineer", "Systems Administrator", "IT Support", "Help Desk",
+    "Network Engineer", "Cyber Security", "Data Analyst", "Data Engineer",
+    "Business Analyst", "QA Tester", "Test Analyst",
+    # Logistics, warehouse & transport
+    "Warehouse Operator", "Warehouse Manager", "Forklift Operator", "Picker Packer",
+    "Logistics Coordinator", "Supply Chain", "Truck Driver", "Delivery Driver",
+    "Dispatcher", "Inventory Controller",
+    # Hospitality & tourism
+    "Chef", "Cook", "Kitchen Hand", "Waiter", "Barista", "Bartender",
+    "Restaurant Manager", "Hotel Manager", "Housekeeper",
+    # Government, defence & security
+    "Public Servant", "Policy Officer",
+    "Defence", "ADF", "Security Officer", "Security Guard", "Intelligence Analyst",
+    "Compliance Officer", "WHS Officer", "OHS Advisor",
+    # Legal
+    "Solicitor", "Lawyer", "Paralegal", "Legal Secretary", "Conveyancer",
+    # Science & environment
+    "Laboratory Technician", "Scientist", "Research Assistant", "Environmental Officer",
+    "Geologist", "Chemist",
+    # Property & real estate
+    "Property Manager", "Real Estate Agent", "Leasing Consultant", "Facilities Manager",
+    # Management & professional
+    "Project Manager", "Operations Manager", "General Manager", "Team Leader",
+    "Supervisor", "Coordinator", "Consultant", "Analyst",
 ]
 
 
@@ -96,7 +148,10 @@ class AutoJobApp(ctk.CTk):
         left.pack(side="left", fill="both", expand=True, padx=(0, 6))
 
         ctk.CTkLabel(left, text="Keywords (search query)", font=ctk.CTkFont(weight="bold")).pack(anchor="w", padx=8, pady=(8, 0))
-        self.keywords_entry = ctk.CTkEntry(left, placeholder_text="e.g. Python OR 'Software Engineer' OR DevOps")
+        self.keywords_entry = ctk.CTkEntry(
+            left,
+            placeholder_text="e.g. nurse OR electrician OR accountant — or leave blank and tick roles below",
+        )
         self.keywords_entry.pack(fill="x", padx=8, pady=4)
 
         loc_frame = ctk.CTkFrame(left)
@@ -108,8 +163,9 @@ class AutoJobApp(ctk.CTk):
 
         title_frame = ctk.CTkFrame(left)
         title_frame.pack(fill="both", expand=True, padx=8, pady=6)
-        ctk.CTkLabel(title_frame, text="Role titles (optional multi-select)", font=ctk.CTkFont(weight="bold")).pack(anchor="w", padx=4)
-        self.title_checks = ScrollableCheckFrame(title_frame, JOB_TITLES, height=140)
+        ctk.CTkLabel(title_frame, text="Role titles (optional multi-select — any industry)",
+                     font=ctk.CTkFont(weight="bold")).pack(anchor="w", padx=4)
+        self.title_checks = ScrollableCheckFrame(title_frame, JOB_TITLES, height=180)
         self.title_checks.pack(fill="both", expand=True, padx=2, pady=2)
 
         right = ctk.CTkFrame(outer, width=320)
@@ -346,19 +402,25 @@ class AutoJobApp(ctk.CTk):
                 locs = self.loc_checks.get_selected()
                 titles = self.title_checks.get_selected()
                 keywords = self.keywords_entry.get().strip()
-                title_bits = [f'"{t}"' for t in titles[:6]]
+                title_bits = [f'"{t}"' for t in titles[:8]]
                 if titles and not keywords:
                     keywords = " OR ".join(title_bits)
                 elif titles and keywords:
-                    # Append title terms without nested parens that confuse APIs
-                    keywords = keywords + " OR " + " OR ".join(title_bits[:4])
+                    keywords = keywords + " OR " + " OR ".join(title_bits[:5])
+
+                # No tech-only default — require keywords or selected roles
+                if not keywords:
+                    self.after(0, lambda: self._search_error(
+                        "Enter keywords or select at least one role title before searching."
+                    ))
+                    return
 
                 primary_loc = locs[0] if locs else "Brisbane QLD"
                 if "SEQ" in locs or "Queensland" in locs:
                     primary_loc = "Brisbane QLD"
 
                 query = {
-                    "keywords": keywords or "software engineer",
+                    "keywords": keywords,
                     "location": primary_loc,
                     "preferred_locations": locs,
                     "include_keywords": self.include_box.get_keywords() + titles,
@@ -380,12 +442,10 @@ class AutoJobApp(ctk.CTk):
                 top_n = int(self.config.get("top_results", 30))
                 result_jobs = new_only[:top_n]
 
-                # Remember these so the next run can skip duplicates
                 save_history(ranked)
                 self.config.set("last_locations", locs)
                 self.config.set("exclude_keywords", self.exclude_box.get_keywords())
 
-                # Hand results to main thread only — never mutate self.jobs from worker
                 self.after(0, lambda jobs=result_jobs: self._search_done(jobs))
             except Exception as e:
                 err = str(e)
@@ -402,7 +462,6 @@ class AutoJobApp(ctk.CTk):
     def _search_error(self, msg: str):
         self.search_btn.configure(state="normal", text="Search Jobs")
         self.status.configure(text=f"Error: {msg}")
-        # Delay modal so it runs cleanly on the main UI loop
         self.after(50, lambda: messagebox.showerror("Search failed", msg))
 
     def _export(self):
