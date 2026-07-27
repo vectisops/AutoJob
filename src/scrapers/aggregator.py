@@ -7,6 +7,8 @@ Built for individual job hunting, not continuous bulk harvesting.
 """
 from typing import List, Dict, Any
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import inspect
+import asyncio
 
 from src.models.job import Job
 from src.scrapers.adzuna import AdzunaScraper
@@ -37,21 +39,41 @@ class JobAggregator:
             scrapers.extend(self.remote_scrapers)
 
         def run(s):
+            name = getattr(s, "name", type(s).__name__)
             try:
-                return s.search(query)
+                # Support both sync and async search() implementations
+                if inspect.iscoroutinefunction(s.search):
+                    return asyncio.run(s.search(query))
+                result = s.search(query)
+                # Guard: if a sync wrapper returned a coroutine by mistake
+                if inspect.iscoroutine(result):
+                    return asyncio.run(result)
+                return result or []
             except Exception as e:
-                print(f"[{s.name}] failed: {e}")
+                print(f"[{name}] failed: {e}")
                 return []
 
         with ThreadPoolExecutor(max_workers=4) as ex:
             futures = {ex.submit(run, s): s for s in scrapers}
             for fut in as_completed(futures):
-                all_jobs.extend(fut.result())
+                jobs = fut.result()
+                if jobs:
+                    all_jobs.extend(jobs)
 
+        # De-dupe within this run (prefer URL when present)
         seen = set()
         unique = []
         for j in all_jobs:
-            key = (j.title.lower().strip(), j.company.lower().strip())
+            url = (j.url or j.apply_url or "").strip().lower()
+            if url and len(url) > 10:
+                key = ("url", url)
+            else:
+                key = (
+                    "tc",
+                    (j.title or "").lower().strip(),
+                    (j.company or "").lower().strip(),
+                    (j.location or "").lower().strip(),
+                )
             if key not in seen:
                 seen.add(key)
                 unique.append(j)
