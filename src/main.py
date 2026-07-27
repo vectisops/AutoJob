@@ -1,6 +1,7 @@
 """
 AutoJob entry point.
 Run with:  python -m src.main
+Or:        python run.py
 """
 import sys
 from pathlib import Path
@@ -10,6 +11,8 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from src.gui.app import run_app
+
+__all__ = ["run_app"]
 
 
 if __name__ == "__main__":
