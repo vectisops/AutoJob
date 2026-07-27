@@ -85,13 +85,29 @@ Connect free job-search API credentials if you have them, and complete a one-tim
 
 ---
 
-## Quick start (for testing)
+## Install (fresh machine)
+
+**Requirements:** Python **3.10+**
 
 ```bash
 git clone https://github.com/vectisops/AutoJob.git
 cd AutoJob
+python3 -m venv .venv
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 playwright install chromium
+```
+
+**Linux extras** (GUI + browser):
+
+```bash
+sudo apt install python3-tk          # Debian/Ubuntu — needed for the window
+playwright install-deps chromium     # system libraries for Chromium
+```
+
+**Run:**
+
+```bash
 python -m src.main
 ```
 
