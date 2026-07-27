@@ -11,11 +11,14 @@ SETTINGS_PATH = CONFIG_DIR / "settings.json"
 EXAMPLE_PATH = CONFIG_DIR / "settings.example.json"
 
 DEFAULT_SETTINGS = {
+    # Personal use defaults – broader collection so niche roles can surface,
+    # then only the best matches are shown (max 30).
     "adzuna_app_id": "",
     "adzuna_app_key": "",
     "default_country": "au",
     "results_per_page": 50,
-    "max_pages": 3,
+    "max_pages": 8,          # enough for a few hundred results across sources
+    "top_results": 30,       # maximum jobs returned / shown to the user
     "theme": "dark",
     "browser_headless": False,
     "seek_profile_dir": str(DATA_DIR / "browser_profiles" / "seek"),
@@ -25,6 +28,7 @@ DEFAULT_SETTINGS = {
     "exclude_keywords": ["unpaid", "volunteer", "internship (unpaid)"],
     "salary_min": 0,
     "salary_max": 0,
+    "history_file": str(DATA_DIR / "history" / "job_history.json"),
 }
 
 
@@ -35,6 +39,7 @@ class Config:
         (DATA_DIR / "browser_profiles").mkdir(parents=True, exist_ok=True)
         (DATA_DIR / "exports").mkdir(parents=True, exist_ok=True)
         (DATA_DIR / "resumes").mkdir(parents=True, exist_ok=True)
+        (DATA_DIR / "history").mkdir(parents=True, exist_ok=True)
         self._data: Dict[str, Any] = {}
         self.load()
 
@@ -48,7 +53,6 @@ class Config:
         else:
             self._data = DEFAULT_SETTINGS.copy()
             self.save()
-            # also write example
             with open(EXAMPLE_PATH, "w", encoding="utf-8") as f:
                 json.dump(DEFAULT_SETTINGS, f, indent=2)
 
