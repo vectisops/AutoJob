@@ -1,0 +1,37 @@
+# Local data and secrets
+data/
+*.env
+.env*
+config/settings.json
+config/keys.json
+**/sessions/
+**/browser_profiles/
+*.session
+*.cookies
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.venv/
+venv/
+ENV/
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Exports / temp
+exports/
+*.xlsx
+*.csv
+*.log
+temp/
