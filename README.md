@@ -13,6 +13,22 @@ No more endless scrolling. Just clearer choices and a faster path to applying.
 
 ---
 
+## This is a personal tool
+
+AutoJob is made for **one person looking for their next role**.
+
+It is not a bulk scraping system, not a data-harvesting service, and not designed for recruiters, agencies, or large-scale collection of job listings.
+
+Everything is kept deliberately modest:
+- A small number of results per search
+- Ranking focused on *your* résumé and preferences
+- One-click apply that simply opens the real job page for you
+- Logins and data that stay only on your own computer
+
+You stay in full control of every application.
+
+---
+
 ## What AutoJob does for you
 
 **Finds jobs that match you**  
