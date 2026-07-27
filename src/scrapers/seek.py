@@ -53,7 +53,16 @@ class SeekScraper(BaseScraper):
                 url = f"{base}{params}&page={page_num}"
                 try:
                     await page.goto(url, wait_until="domcontentloaded", timeout=45000)
-                    await page.wait_for_timeout(1500)
+                    # Extra time for React hydration / anti-bot scripts
+                    await page.wait_for_timeout(3000)
+
+                    page_content = (await page.content()).lower()
+                    if any(
+                        token in page_content
+                        for token in ("access denied", "cf-challenge", "captcha", "are you a robot", "blocked")
+                    ):
+                        print("[Seek] Warning: possible bot challenge / CAPTCHA — try Authenticate Seek (headed) first.")
+                        break
 
                     cards = await page.query_selector_all(
                         '[data-automation="jobCard"], article[data-testid="job-card"], [data-automation="normalJob"]'
@@ -61,38 +70,60 @@ class SeekScraper(BaseScraper):
                     if not cards:
                         cards = await page.query_selector_all("article")
 
+                    if not cards:
+                        print(f"[Seek] page {page_num}: no job cards found")
+                        break
+
                     for card in cards:
                         try:
-                            title_el = await card.query_selector('[data-automation="jobTitle"], a[data-automation="jobTitle"]')
-                            company_el = await card.query_selector('[data-automation="jobCompany"], [data-automation="jobCompanyName"]')
-                            loc_el = await card.query_selector('[data-automation="jobLocation"], [data-automation="jobCardLocation"]')
+                            title_el = await card.query_selector(
+                                '[data-automation="jobTitle"], a[data-automation="jobTitle"]'
+                            )
+                            company_el = await card.query_selector(
+                                '[data-automation="jobCompany"], [data-automation="jobCompanyName"]'
+                            )
+                            loc_el = await card.query_selector(
+                                '[data-automation="jobLocation"], [data-automation="jobCardLocation"]'
+                            )
                             salary_el = await card.query_selector('[data-automation="jobSalary"]')
-                            link_el = await card.query_selector('a[data-automation="jobTitle"], a[href*="/job/"]')
+                            link_el = await card.query_selector(
+                                'a[data-automation="jobTitle"], a[href*="/job/"]'
+                            )
 
                             title = (await title_el.inner_text()).strip() if title_el else ""
-                            company = (await company_el.inner_text()).strip() if company_el else "Unknown"
-                            location_txt = (await loc_el.inner_text()).strip() if loc_el else location
-                            salary_raw = (await salary_el.inner_text()).strip() if salary_el else ""
-                            href = await link_el.get_attribute("href") if link_el else ""
-                            if href and not href.startswith("http"):
-                                href = "https://www.seek.com.au" + href
-
                             if not title:
                                 continue
 
+                            company = (await company_el.inner_text()).strip() if company_el else "Unknown"
+                            location_txt = (await loc_el.inner_text()).strip() if loc_el else location
+                            salary_raw = (await salary_el.inner_text()).strip() if salary_el else ""
+
+                            href = ""
+                            if link_el:
+                                raw_href = await link_el.get_attribute("href")
+                                if raw_href:
+                                    href = (
+                                        raw_href
+                                        if raw_href.startswith("http")
+                                        else "https://www.seek.com.au" + raw_href
+                                    )
+
                             job_id = href.split("/")[-1].split("?")[0] if href else f"seek-{len(jobs)}"
-                            jobs.append(Job(
-                                id=f"seek-{job_id}",
-                                title=title,
-                                company=company,
-                                location=location_txt,
-                                salary_raw=salary_raw,
-                                url=href,
-                                apply_url=href,
-                                source="Seek",
-                                description="",
-                            ))
+                            jobs.append(
+                                Job(
+                                    id=f"seek-{job_id}",
+                                    title=title,
+                                    company=company,
+                                    location=location_txt,
+                                    salary_raw=salary_raw,
+                                    url=href,
+                                    apply_url=href,
+                                    source="Seek",
+                                    description="",
+                                )
+                            )
                         except Exception:
+                            # Skip malformed card without killing the batch
                             continue
 
                     if len(cards) < 10:
@@ -107,6 +138,7 @@ class SeekScraper(BaseScraper):
     async def authenticate_interactive(self) -> bool:
         """Launch headed browser so user can log in. Profile is persisted."""
         from playwright.async_api import async_playwright
+
         async with async_playwright() as p:
             context = await p.chromium.launch_persistent_context(
                 user_data_dir=str(self.profile_dir),
