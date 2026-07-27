@@ -1,0 +1,18 @@
+{
+  "adzuna_app_id": "",
+  "adzuna_app_key": "",
+  "default_country": "au",
+  "results_per_page": 50,
+  "max_pages": 8,
+  "top_results": 30,
+  "theme": "dark",
+  "browser_headless": true,
+  "seek_profile_dir": "data/browser_profiles/seek",
+  "resume_path": "",
+  "last_locations": ["Brisbane", "SEQ"],
+  "last_titles": [],
+  "exclude_keywords": ["unpaid", "volunteer"],
+  "salary_min": 0,
+  "salary_max": 0,
+  "history_file": "data/history/job_history.json"
+}
